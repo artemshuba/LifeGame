@@ -94,7 +94,6 @@ namespace LifeGameWP.Life
                     _canStep = false;
 
                     await StepAsync();
-                    IsPaused = true;
 
                     _canStep = true;
                 }
