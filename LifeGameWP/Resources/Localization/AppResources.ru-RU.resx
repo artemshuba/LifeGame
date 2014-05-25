@@ -132,12 +132,15 @@
     <value>пауза</value>
   </data>
   <data name="AppbarReset" xml:space="preserve">
-    <value>сбросить</value>
+    <value>очистить</value>
   </data>
   <data name="AppbarRun" xml:space="preserve">
     <value>пуск</value>
   </data>
   <data name="AppbarLoad" xml:space="preserve">
     <value>загрузить</value>
+  </data>
+  <data name="AppbarStep" xml:space="preserve">
+    <value>след. шаг</value>
   </data>
 </root>

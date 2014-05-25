@@ -79,7 +79,7 @@ namespace LifeGameWP.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to reset.
+        ///   Looks up a localized string similar to clear.
         /// </summary>
         public static string AppbarReset {
             get {
@@ -102,6 +102,15 @@ namespace LifeGameWP.Resources.Localization {
         public static string AppbarSave {
             get {
                 return ResourceManager.GetString("AppbarSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to next step.
+        /// </summary>
+        public static string AppbarStep {
+            get {
+                return ResourceManager.GetString("AppbarStep", resourceCulture);
             }
         }
         

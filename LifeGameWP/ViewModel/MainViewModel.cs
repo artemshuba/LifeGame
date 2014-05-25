@@ -16,34 +16,70 @@ namespace LifeGameWP.ViewModel
     {
         private ObservableCollection<IApplicationBarMenuItem> _appbarButtons;
         private bool _canSaveLoad = true;
+        private bool _canStep = true;
 
         #region Commands
 
+        /// <summary>
+        /// Play/Pause command
+        /// </summary>
         public RelayCommand PlayPauseCommand { get; private set; }
 
+        /// <summary>
+        /// Save state command
+        /// </summary>
         public RelayCommand SaveCommand { get; private set; }
 
+        /// <summary>
+        /// Load state command
+        /// </summary>
         public RelayCommand LoadCommand { get; private set; }
 
+        /// <summary>
+        /// Reset command
+        /// </summary>
         public RelayCommand ResetCommand { get; private set; }
+
+        /// <summary>
+        /// Perform single step command
+        /// </summary>
+        public RelayCommand StepCommand { get; private set; }
 
         #endregion
 
+        /// <summary>
+        /// Application bar buttons
+        /// </summary>
         public ObservableCollection<IApplicationBarMenuItem> AppbarButtons
         {
             get { return _appbarButtons; }
             set { Set(ref _appbarButtons, value); }
         }
 
-        public Game1 Game { get; private set; }
+        /// <summary>
+        /// Game
+        /// </summary>
+        public LifeGame Game { get; private set; }
 
+        /// <summary>
+        /// Is save/load button enabled
+        /// </summary>
         public bool CanSaveLoad
         {
             get { return _canSaveLoad; }
             set { Set(ref _canSaveLoad, value); }
         }
 
-        public MainViewModel(Game1 game)
+        /// <summary>
+        /// Is step button enabled
+        /// </summary>
+        public bool CanStep
+        {
+            get { return _canStep; }
+            set { Set(ref _canStep, value); }
+        }
+
+        public MainViewModel(LifeGame game)
         {
             Game = game;
 
@@ -53,7 +89,7 @@ namespace LifeGameWP.ViewModel
             InitializeAppbarButtons();
         }
 
-        void Game_Initialized(object sender, EventArgs e)
+        private void Game_Initialized(object sender, EventArgs e)
         {
             Initialize();
         }
@@ -64,6 +100,7 @@ namespace LifeGameWP.ViewModel
             {
                 Game.IsPaused = !Game.IsPaused;
                 CanSaveLoad = Game.IsPaused;
+                CanStep = Game.IsPaused;
 
                 InitializeAppbarButtons();
             });
@@ -75,13 +112,18 @@ namespace LifeGameWP.ViewModel
 
             LoadCommand = new RelayCommand(() =>
             {
-                Game.LoadData("universe.dat");
+                Game.TryLoadData("universe.dat");
             });
 
             ResetCommand = new RelayCommand(() =>
             {
                 Game.IsPaused = true;
                 Game.Universe.CellCollection.Clear();
+            });
+
+            StepCommand = new RelayCommand(() =>
+            {
+                Game.Universe.StepAsync();
             });
         }
 
@@ -103,6 +145,15 @@ namespace LifeGameWP.ViewModel
             playPauseButton.Command = PlayPauseCommand;
 
             appbarButtons.Add(playPauseButton);
+
+
+            var stepButton = new BindableApplicationBarIconButton();
+            stepButton.IconUri = new Uri("/Resources/Images/Appbar/appbar.control.resume.png", UriKind.Relative);
+            stepButton.Text = AppResources.AppbarStep;
+            stepButton.Command = StepCommand;
+            stepButton.SetBinding(BindableApplicationBarIconButton.IsEnabledProperty, new Binding("CanStep"));
+
+            appbarButtons.Add(stepButton);
 
 
             var saveButton = new BindableApplicationBarIconButton();
@@ -134,23 +185,25 @@ namespace LifeGameWP.ViewModel
 
         private void Initialize()
         {
+            //load saved (or default) universe state
             using (var store = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                if (store.FileExists("universe.dat"))
-                    return;
+                if (!store.FileExists("universe.dat"))
+                {
+                    var strm = Application.GetResourceStream(new Uri("/LifeGameWP;component/Content/universe.dat",
+                            UriKind.Relative));
 
-                var strm = Application.GetResourceStream(new Uri("/LifeGameWP;component/Content/universe.dat", UriKind.Relative));
+                    var fileStream = store.OpenFile("universe.dat", FileMode.Create, FileAccess.Write);
+                    strm.Stream.CopyTo(fileStream);
 
-                var fileStream = store.OpenFile("universe.dat", FileMode.Create, FileAccess.Write);
-                strm.Stream.CopyTo(fileStream);
+                    strm.Stream.Dispose();
 
-                strm.Stream.Dispose();
-
-                fileStream.Flush();
-                fileStream.Dispose();
+                    fileStream.Flush();
+                    fileStream.Dispose();
+                }
             }
 
-            Game.LoadData("universe.dat");
+            Game.TryLoadData("universe.dat");
         }
     }
 }

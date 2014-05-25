@@ -7,13 +7,11 @@ namespace LifeGameWP
 {
     public static class Primitives2D
     {
-
-
         #region Private Members
 
         private static readonly Dictionary<String, List<Vector2>> circleCache = new Dictionary<string, List<Vector2>>();
         //private static readonly Dictionary<String, List<Vector2>> arcCache = new Dictionary<string, List<Vector2>>();
-        private static Texture2D pixel;
+        private static Texture2D _pixel;
 
         #endregion
 
@@ -22,8 +20,8 @@ namespace LifeGameWP
 
         private static void CreateThePixel(SpriteBatch spriteBatch)
         {
-            pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            pixel.SetData(new[] { Color.White });
+            _pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            _pixel.SetData(new[] { Color.White });
         }
 
 
@@ -133,13 +131,13 @@ namespace LifeGameWP
         /// <param name="color">The color to draw the rectangle in</param>
         public static void FillRectangle(this SpriteBatch spriteBatch, Rectangle rect, Color color)
         {
-            if (pixel == null)
+            if (_pixel == null)
             {
                 CreateThePixel(spriteBatch);
             }
 
             // Simply use the function already there
-            spriteBatch.Draw(pixel, rect, color);
+            spriteBatch.Draw(_pixel, rect, color);
         }
 
 
@@ -152,12 +150,12 @@ namespace LifeGameWP
         /// <param name="angle">The angle in radians to draw the rectangle at</param>
         public static void FillRectangle(this SpriteBatch spriteBatch, Rectangle rect, Color color, float angle)
         {
-            if (pixel == null)
+            if (_pixel == null)
             {
                 CreateThePixel(spriteBatch);
             }
 
-            spriteBatch.Draw(pixel, rect, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
+            spriteBatch.Draw(_pixel, rect, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
         }
 
 
@@ -184,13 +182,13 @@ namespace LifeGameWP
         /// <param name="color">The color to draw the rectangle in</param>
         public static void FillRectangle(this SpriteBatch spriteBatch, Vector2 location, Vector2 size, Color color, float angle)
         {
-            if (pixel == null)
+            if (_pixel == null)
             {
                 CreateThePixel(spriteBatch);
             }
 
             // stretch the pixel between the two vectors
-            spriteBatch.Draw(pixel,
+            spriteBatch.Draw(_pixel,
                              location,
                              null,
                              color,
@@ -389,13 +387,13 @@ namespace LifeGameWP
         /// <param name="thickness">The thickness of the line</param>
         public static void DrawLine(this SpriteBatch spriteBatch, Vector2 point, float length, float angle, Color color, float thickness)
         {
-            if (pixel == null)
+            if (_pixel == null)
             {
                 CreateThePixel(spriteBatch);
             }
 
             // stretch the pixel between the two vectors
-            spriteBatch.Draw(pixel,
+            spriteBatch.Draw(_pixel,
                              point,
                              null,
                              color,
@@ -419,12 +417,12 @@ namespace LifeGameWP
 
         public static void PutPixel(this SpriteBatch spriteBatch, Vector2 position, Color color)
         {
-            if (pixel == null)
+            if (_pixel == null)
             {
                 CreateThePixel(spriteBatch);
             }
 
-            spriteBatch.Draw(pixel, position, color);
+            spriteBatch.Draw(_pixel, position, color);
         }
 
         #endregion

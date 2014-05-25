@@ -10,7 +10,7 @@ namespace LifeGameWP
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Game
+    public class LifeGame : Game
     {
         private const float UNIVERSE_FIZE = 5000.0f;
 
@@ -37,7 +37,7 @@ namespace LifeGameWP
             get { return _universe; }
         }
 
-        public Game1()
+        public LifeGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             IsFixedTimeStep = true;
@@ -105,11 +105,15 @@ namespace LifeGameWP
 
             _universe.Draw(gameTime);
 
-            _spriteBatch.DrawString(_debugFont, "Cells count:" + _universe.CellsCount, new Vector2(10, 10), Color.Yellow);
+            //Draw some debug info
+            _spriteBatch.DrawString(_debugFont, "Alive cells count:" + _universe.AliveCellsCount, new Vector2(10, 10), Color.Yellow);
 
-            _spriteBatch.DrawString(_debugFont, string.Format("Camera: X {0} Y {1}", _universe.Camera.X, _universe.Camera.Y), new Vector2(10, 30), Color.Yellow);
+            _spriteBatch.DrawString(_debugFont, string.Format("Generation: {0}", _universe.CellCollection.Generation), new Vector2(10, 30), Color.Yellow);
 
-            _spriteBatch.DrawString(_debugFont, string.Format("Universe size: {0}x{0}", _universe.Size), new Vector2(10, 50), Color.Yellow);
+            _spriteBatch.DrawString(_debugFont, string.Format("Camera: X {0} Y {1}", _universe.Camera.X, _universe.Camera.Y), new Vector2(10, 50), Color.Yellow);
+
+            _spriteBatch.DrawString(_debugFont, string.Format("Universe size: {0}x{0}", _universe.Size), new Vector2(10, 70), Color.Yellow);
+            //
 
             _spriteBatch.End();
 
@@ -117,6 +121,10 @@ namespace LifeGameWP
             base.Draw(gameTime);
         }
 
+        /// <summary>
+        /// Save universe state to file
+        /// </summary>
+        /// <param name="fileName">File name</param>
         public void SaveData(string fileName)
         {
             using (var store = IsolatedStorageFile.GetUserStoreForApplication())
@@ -125,6 +133,7 @@ namespace LifeGameWP
                 {
                     using (var writer = new BinaryWriter(fileStream))
                     {
+                        //write camera coords
                         writer.Write(_universe.Camera.X);
                         writer.Write(_universe.Camera.Y);
 
@@ -143,7 +152,11 @@ namespace LifeGameWP
             }
         }
 
-        public void LoadData(string fileName)
+        /// <summary>
+        /// Load universe state from file
+        /// </summary>
+        /// <param name="fileName">File name</param>
+        public void TryLoadData(string fileName)
         {
             using (var store = IsolatedStorageFile.GetUserStoreForApplication())
             {
@@ -156,6 +169,7 @@ namespace LifeGameWP
                     {
                         var cellCollection = new CellCollection(UNIVERSE_FIZE);
 
+                        //read camera coords
                         var cameraX = reader.ReadSingle();
                         var cameraY = reader.ReadSingle();
 

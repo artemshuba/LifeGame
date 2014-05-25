@@ -85,7 +85,7 @@
     <Compile Include="GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Game1.cs" />
+    <Compile Include="LifeGame.cs" />
     <Compile Include="Primitives2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Localization\AppResources.Designer.cs">
@@ -112,6 +112,7 @@
     </Content>
     <Content Include="Resources\Images\Appbar\appbar.control.pause.png" />
     <Content Include="Resources\Images\Appbar\appbar.control.play.png" />
+    <Content Include="Resources\Images\Appbar\appbar.control.resume.png" />
     <Content Include="Resources\Images\Appbar\appbar.folder.open.png" />
     <Content Include="Resources\Images\Appbar\appbar.save.png" />
     <Resource Include="Content\universe.dat" />

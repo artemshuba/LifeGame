@@ -15,7 +15,7 @@ namespace LifeGameWP
         {
             InitializeComponent();
 
-            var game = XamlGame<Game1>.Create("", this);
+            var game = XamlGame<LifeGame>.Create("", this);
 
             _mainViewModel = new MainViewModel(game);
             this.DataContext = _mainViewModel;

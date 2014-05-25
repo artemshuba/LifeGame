@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace LifeGameWP.Life
 {
+    /// <summary>
+    /// Collection of cells
+    /// </summary>
     public class CellCollection : List<Cell>
     {
-        private float _size;
-        private static object _syncRoot = new object();
+        private readonly float _universeSize;
 
-        public CellCollection(IList<Cell> cells, float size)
-            : this(size)
+        public uint Generation { get; private set; }
+
+        public CellCollection(IList<Cell> cells, float universeSize)
+            : this(universeSize)
         {
             for (int i = 0; i < cells.Count; i++)
             {
@@ -18,56 +21,45 @@ namespace LifeGameWP.Life
             }
         }
 
-        public CellCollection(float size)
+        public CellCollection(float universeSize)
         {
-            _size = size;
+            _universeSize = universeSize;
             Generation = 0;
-            _stopwatch = new Stopwatch();
         }
 
-        // Returns the amount of neighboring cells that are alive.
-        private byte GetAliveNeighborsCount(float x, float y)
+        /// <summary>
+        /// Add new cell at specified coords
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public void Add(float x, float y)
         {
-            byte neighbors = 0;
-            for (int i = -1; i <= 1; i++)
-            {
-                for (int o = -1; o <= 1; o++)
-                {
-                    if (i == 0 && o == 0)
-                        continue;
-                    if (Contains(x + i, y + o))
-                        neighbors++;
-                }
-            }
-            return neighbors;
+            Add(new Cell(x, y));
         }
 
-        // Returns all neighboring cells.
-        private IEnumerable<Cell> GetNeighbors(float x, float y)
+        /// <summary>
+        /// Checks if collection contains cell at specified coords
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public bool Contains(float x, float y)
         {
-            for (int i = -1; i <= 1; i++)
-            {
-                for (int o = -1; o <= 1; o++)
-                {
-                    if ((i == 0 && o == 0) || (y + i < 0 || x + o < 0 || y + i > _size || x + o > _size))
-                        continue;
-
-                    yield return new Cell(x + o, y + i);
-                }
-            }
+            return Contains(new Cell(x, y));
         }
 
-        // Steps forward the specified amount of generations.
+        /// <summary>
+        /// Steps forward the specified amount of generations.
+        /// </summary>
+        /// <param name="steps">Amount of steps</param>
         public void Step(uint steps = 1)
         {
-            _stopwatch.Restart();
-
             for (uint step = 0; step < steps; step++)
             {
                 Generation++;
 
                 // Variable to act as a snapshot of the current state while we make changes.
-                var oldState = new CellCollection(this, _size);
+                var oldState = new CellCollection(this, _universeSize);
 
                 // Variable to hold the cells that we will check.
                 var checkCells = new List<Cell>(oldState);
@@ -103,24 +95,38 @@ namespace LifeGameWP.Life
                     }
                 }
             }
-
-            _stopwatch.Stop();
         }
 
-        public void Add(float x, float y)
+        // Returns the amount of neighboring cells that are alive.
+        private byte GetAliveNeighborsCount(float x, float y)
         {
-            Add(new Cell(x, y));
+            byte neighbors = 0;
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (i == 0 && j == 0)
+                        continue;
+                    if (Contains(x + i, y + j))
+                        neighbors++;
+                }
+            }
+            return neighbors;
         }
 
-        public bool Contains(float x, float y)
+        // Returns all neighboring cells.
+        private IEnumerable<Cell> GetNeighbors(float x, float y)
         {
-            return Contains(new Cell(x, y));
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if ((i == 0 && j == 0) || (y + i < 0 || x + j < 0 || y + i > _universeSize || x + j > _universeSize))
+                        continue;
+
+                    yield return new Cell(x + j, y + i);
+                }
+            }
         }
-
-        public uint Generation { get; private set; }
-
-        public long MillisecondsToGenerate { get { return _stopwatch.ElapsedMilliseconds; } }
-
-        private readonly Stopwatch _stopwatch;
     }
 }

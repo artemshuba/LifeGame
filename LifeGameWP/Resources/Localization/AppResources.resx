@@ -132,12 +132,15 @@
     <value>pause</value>
   </data>
   <data name="AppbarReset" xml:space="preserve">
-    <value>reset</value>
+    <value>clear</value>
   </data>
   <data name="AppbarRun" xml:space="preserve">
     <value>run</value>
   </data>
   <data name="AppbarLoad" xml:space="preserve">
     <value>load</value>
+  </data>
+  <data name="AppbarStep" xml:space="preserve">
+    <value>next step</value>
   </data>
 </root>
