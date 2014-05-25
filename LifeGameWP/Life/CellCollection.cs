@@ -52,8 +52,10 @@ namespace LifeGameWP.Life
         /// Steps forward the specified amount of generations.
         /// </summary>
         /// <param name="steps">Amount of steps</param>
-        public void Step(uint steps = 1)
+        public bool Step(uint steps = 1)
         {
+            bool changed = false;
+
             for (uint step = 0; step < steps; step++)
             {
                 Generation++;
@@ -86,15 +88,23 @@ namespace LifeGameWP.Life
                     if (oldState.Contains(cell.X, cell.Y))
                     {
                         if (neighbors < 2 || neighbors > 3)
+                        {
                             Remove(cell);
+                            changed = true;
+                        }
                     }
                     else
                     {
                         if (neighbors == 3)
+                        {
                             Add(cell);
+                            changed = true;
+                        }
                     }
                 }
             }
+
+            return changed;
         }
 
         // Returns the amount of neighboring cells that are alive.

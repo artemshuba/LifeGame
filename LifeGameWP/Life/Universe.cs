@@ -94,6 +94,7 @@ namespace LifeGameWP.Life
                     _canStep = false;
 
                     await StepAsync();
+                    IsPaused = true;
 
                     _canStep = true;
                 }
@@ -109,12 +110,12 @@ namespace LifeGameWP.Life
             DrawGrid();
             DrawField();
         }
-        
+
         /// <summary>
         /// Perform update of cells collection
         /// </summary>
         /// <returns></returns>
-        public Task StepAsync()
+        public Task<bool> StepAsync()
         {
             //run in separate task to avoid blocking app ui thread
             return Task.Run(() => _cellCollection.Step());
