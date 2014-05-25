@@ -143,4 +143,10 @@
   <data name="AppbarStep" xml:space="preserve">
     <value>след. шаг</value>
   </data>
+  <data name="AppbarMusicTurnOff" xml:space="preserve">
+    <value>выключить музыку</value>
+  </data>
+  <data name="AppbarMusicTurnOn" xml:space="preserve">
+    <value>включить музыку</value>
+  </data>
 </root>

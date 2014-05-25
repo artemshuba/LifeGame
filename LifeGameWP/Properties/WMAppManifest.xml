@@ -4,14 +4,12 @@
   <Languages xmlns="">
     <Language code="ru-RU" />
   </Languages>
-  <App xmlns="" ProductID="{a68420aa-ce21-4380-8a0f-3ca09d95580e}" Title="LifeGameWP" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="LifeGameWP author" Description="Sample description" Publisher="LifeGameWP" PublisherID="{0df4bf76-7146-42eb-ba7c-83daa7249a23}">
+  <App xmlns="" ProductID="{a68420aa-ce21-4380-8a0f-3ca09d95580e}" Title="Life Game" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Artem Shuba" Description="Life Game" Publisher="Artem Shuba" PublisherID="{0df4bf76-7146-42eb-ba7c-83daa7249a23}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
       <Capability Name="ID_CAP_MEDIALIB_AUDIO" />
       <Capability Name="ID_CAP_MEDIALIB_PLAYBACK" />
-      <Capability Name="ID_CAP_SENSORS" />
-      <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
     </Capabilities>
     <Tasks>
       <DefaultTask Name="_default" NavigationPage="GamePage.xaml" />

@@ -20,7 +20,7 @@
         <DrawingSurface/>
 
         <!-- Media element for audio -->
-        <MediaElement />
+        <MediaElement x:Name="MediaElement" Volume="1"/>
         
         <bindableApplicationBar:BindableApplicationBar VerticalAlignment="Bottom" BarOpacity="0.6"
                                                       ItemsSource="{Binding AppbarButtons}"

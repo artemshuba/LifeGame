@@ -4,6 +4,7 @@ using System.Resources;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Navigation;
+using GalaSoft.MvvmLight.Threading;
 using LifeGameWP.Resources.Localization;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
@@ -62,6 +63,7 @@ namespace LifeGameWP
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            DispatcherHelper.Initialize();
         }
 
         // Code to execute when the application is activated (brought to foreground)

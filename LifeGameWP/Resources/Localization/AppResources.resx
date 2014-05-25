@@ -143,4 +143,10 @@
   <data name="AppbarStep" xml:space="preserve">
     <value>next step</value>
   </data>
+  <data name="AppbarMusicTurnOff" xml:space="preserve">
+    <value>turn music off</value>
+  </data>
+  <data name="AppbarMusicTurnOn" xml:space="preserve">
+    <value>turn music on</value>
+  </data>
 </root>

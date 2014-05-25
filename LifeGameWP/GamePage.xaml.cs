@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Windows;
+using LifeGameWP.Services;
 using LifeGameWP.ViewModel;
 using Microsoft.Phone.Controls;
 using MonoGame.Framework.WindowsPhone;
@@ -16,6 +16,7 @@ namespace LifeGameWP
             InitializeComponent();
 
             var game = XamlGame<LifeGame>.Create("", this);
+            game.AudioService = new AudioService(MediaElement);
 
             _mainViewModel = new MainViewModel(game);
             this.DataContext = _mainViewModel;

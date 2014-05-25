@@ -94,6 +94,7 @@
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Life\Universe.cs" />
+    <Compile Include="Services\AudioService.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +116,7 @@
     <Content Include="Resources\Images\Appbar\appbar.control.resume.png" />
     <Content Include="Resources\Images\Appbar\appbar.folder.open.png" />
     <Content Include="Resources\Images\Appbar\appbar.save.png" />
+    <Content Include="Resources\Music\DST-Aurora.mp3" />
     <Resource Include="Content\universe.dat" />
     <None Include="packages.config" />
     <None Include="Properties\AppManifest.xml" />

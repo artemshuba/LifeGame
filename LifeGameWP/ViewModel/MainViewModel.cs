@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Data;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Threading;
 using LifeGameWP.Controls.BindableApplicationBar;
 using LifeGameWP.Resources.Localization;
 using Microsoft.Phone.Shell;
@@ -17,6 +18,7 @@ namespace LifeGameWP.ViewModel
         private ObservableCollection<IApplicationBarMenuItem> _appbarButtons;
         private bool _canSaveLoad = true;
         private bool _canStep = true;
+        private bool _isMusicEnabled = true;
 
         #region Commands
 
@@ -44,6 +46,11 @@ namespace LifeGameWP.ViewModel
         /// Perform single step command
         /// </summary>
         public RelayCommand StepCommand { get; private set; }
+
+        /// <summary>
+        /// Turn on/off music command
+        /// </summary>
+        public RelayCommand ToggleMusicCommand { get; private set; }
 
         #endregion
 
@@ -77,6 +84,16 @@ namespace LifeGameWP.ViewModel
         {
             get { return _canStep; }
             set { Set(ref _canStep, value); }
+        }
+
+        public bool IsMusicEnabled
+        {
+            get { return _isMusicEnabled; }
+            set
+            {
+                if (Set(ref _isMusicEnabled, value))
+                    InitializeAppbarButtons();
+            }
         }
 
         public MainViewModel(LifeGame game)
@@ -124,6 +141,16 @@ namespace LifeGameWP.ViewModel
             StepCommand = new RelayCommand(() =>
             {
                 Game.Universe.StepAsync();
+            });
+
+            ToggleMusicCommand = new RelayCommand(() =>
+            {
+                if (IsMusicEnabled)
+                    Game.AudioService.Stop();
+                else
+                    Game.AudioService.Play();
+
+                IsMusicEnabled = !IsMusicEnabled;
             });
         }
 
@@ -180,6 +207,17 @@ namespace LifeGameWP.ViewModel
 
             appbarButtons.Add(resetButton);
 
+
+            var turnMusicButton = new BindableApplicationBarMenuItem();
+            if (IsMusicEnabled)
+                turnMusicButton.Text = AppResources.AppbarMusicTurnOff;
+            else
+                turnMusicButton.Text = AppResources.AppbarMusicTurnOn;
+
+            turnMusicButton.Command = ToggleMusicCommand;
+
+            appbarButtons.Add(turnMusicButton);
+
             AppbarButtons = appbarButtons;
         }
 
@@ -204,6 +242,8 @@ namespace LifeGameWP.ViewModel
             }
 
             Game.TryLoadData("universe.dat");
+
+            DispatcherHelper.RunAsync(() => Game.AudioService.Play(new Uri("/Resources/Music/DST-Aurora.mp3", UriKind.Relative)));
         }
     }
 }

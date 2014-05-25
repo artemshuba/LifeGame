@@ -70,6 +70,24 @@ namespace LifeGameWP.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to turn music off.
+        /// </summary>
+        public static string AppbarMusicTurnOff {
+            get {
+                return ResourceManager.GetString("AppbarMusicTurnOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to turn music on.
+        /// </summary>
+        public static string AppbarMusicTurnOn {
+            get {
+                return ResourceManager.GetString("AppbarMusicTurnOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to pause.
         /// </summary>
         public static string AppbarPause {

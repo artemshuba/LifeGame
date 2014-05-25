@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Windows.Controls;
 using LifeGameWP.Life;
+using LifeGameWP.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -19,9 +21,13 @@ namespace LifeGameWP
         private Universe _universe;
         private bool _isPaused = true;
         private SpriteFont _debugFont;
+        private AudioService _audioService;
 
         public event EventHandler Initialized;
 
+        /// <summary>
+        /// Is paused
+        /// </summary>
         public bool IsPaused
         {
             get { return _isPaused; }
@@ -32,10 +38,18 @@ namespace LifeGameWP
             }
         }
 
+        /// <summary>
+        /// Universe
+        /// </summary>
         public Universe Universe
         {
             get { return _universe; }
         }
+
+        /// <summary>
+        /// Audio service
+        /// </summary>
+        public AudioService AudioService { get; set; }
 
         public LifeGame()
         {
