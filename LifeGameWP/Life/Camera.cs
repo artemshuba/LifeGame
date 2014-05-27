@@ -18,11 +18,11 @@
         /// <summary>
         /// Viewport width
         /// </summary>
-        public float Width { get; set; }
+        public uint Width { get; set; }
 
         /// <summary>
         /// Viewport height
         /// </summary>
-        public float Height { get; set; }
+        public uint Height { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace LifeGameWP.Life
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public void Add(float x, float y)
+        public void Add(ulong x, ulong y)
         {
             Add(new Cell(x, y));
         }
@@ -38,7 +38,7 @@ namespace LifeGameWP.Life
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public bool Contains(float x, float y)
+        public bool Contains(ulong x, ulong y)
         {
             return Contains(new Cell(x, y));
         }

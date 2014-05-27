@@ -7,13 +7,13 @@ namespace LifeGameWP.Life
     /// </summary>
     public struct Cell : IEquatable<Cell>
     {
-        private readonly float _x;
-        private readonly float _y;
+        private readonly ulong _x;
+        private readonly ulong _y;
 
         /// <summary>
         /// X
         /// </summary>
-        public float X
+        public ulong X
         {
             get { return _x; }
         }
@@ -21,12 +21,12 @@ namespace LifeGameWP.Life
         /// <summary>
         /// Y
         /// </summary>
-        public float Y
+        public ulong Y
         {
             get { return _y; }
         }
 
-        public Cell(float x, float y)
+        public Cell(ulong x, ulong y)
         {
             _x = x;
             _y = y;

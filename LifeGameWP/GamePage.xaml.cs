@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows.Input;
 using LifeGameWP.Services;
 using LifeGameWP.ViewModel;
 using Microsoft.Phone.Controls;

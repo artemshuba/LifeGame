@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
-using System.Windows.Controls;
 using LifeGameWP.Life;
 using LifeGameWP.Services;
 using Microsoft.Xna.Framework;
@@ -14,7 +14,7 @@ namespace LifeGameWP
     /// </summary>
     public class LifeGame : Game
     {
-        private const float UNIVERSE_FIZE = 5000.0f;
+        private const ulong UNIVERSE_FIZE = 5000;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -71,7 +71,7 @@ namespace LifeGameWP
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _universe = new Universe(UNIVERSE_FIZE, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, _spriteBatch);
+            _universe = new Universe(UNIVERSE_FIZE, (uint)GraphicsDevice.Viewport.Width, (uint)GraphicsDevice.Viewport.Height, _spriteBatch);
 
             if (Initialized != null)
                 Initialized(this, EventArgs.Empty);
@@ -181,26 +181,32 @@ namespace LifeGameWP
                 {
                     using (var reader = new BinaryReader(fileStream))
                     {
-                        var cellCollection = new CellCollection();
-
-                        //read camera coords
-                        var cameraX = reader.ReadSingle();
-                        var cameraY = reader.ReadSingle();
-
-                        _universe.Camera.X = cameraX;
-                        _universe.Camera.Y = cameraY;
-
-                        while (reader.BaseStream.Position < reader.BaseStream.Length)
+                        try
                         {
-                            //read pair of x,y
-                            var x = reader.ReadSingle();
-                            var y = reader.ReadSingle();
+                            var cellCollection = new CellCollection();
+                            //read camera coords
+                            var cameraX = reader.ReadSingle();
+                            var cameraY = reader.ReadSingle();
 
-                            var cell = new Cell(x, y);
-                            cellCollection.Add(cell);
+                            _universe.Camera.X = cameraX;
+                            _universe.Camera.Y = cameraY;
+
+                            while (reader.BaseStream.Position < reader.BaseStream.Length)
+                            {
+                                //read pair of x,y
+                                var x = reader.ReadUInt64();
+                                var y = reader.ReadUInt64();
+
+                                var cell = new Cell(x, y);
+                                cellCollection.Add(cell);
+                            }
+
+                            _universe.CellCollection = cellCollection;
                         }
-
-                        _universe.CellCollection = cellCollection;
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                        }
                     }
                 }
             }

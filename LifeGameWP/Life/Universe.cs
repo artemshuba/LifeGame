@@ -13,9 +13,10 @@ namespace LifeGameWP.Life
         private const float CAMERA_MOVE_TOLERANCE = 0.5f;
         private const int CELL_SIZE = 40;
         private const double MILLISECONDS_PER_FRAME = 50.0f;//update every 50ms
+        private const float CAMERA_ACCELERATION = 2.0f;
 
         private readonly SpriteBatch _spriteBatch;
-        private readonly float _size; //universe size
+        private readonly ulong _size; //universe size
         private CellCollection _cellCollection;
         private readonly Camera _camera;
         private int _aliveCellsCount;
@@ -66,7 +67,7 @@ namespace LifeGameWP.Life
             set { _cellCollection = value; }
         }
 
-        public Universe(float size, float viewPortWidth, float viewPortHeight, SpriteBatch spriteBatch)
+        public Universe(ulong size, uint viewPortWidth, uint viewPortHeight, SpriteBatch spriteBatch)
         {
             _size = size;
             _spriteBatch = spriteBatch;
@@ -189,16 +190,34 @@ namespace LifeGameWP.Life
 
 
         // Returns the amount of neighboring cells that are alive.
-        private byte GetAliveNeighborsCount(CellCollection cells, float x, float y)
+        private byte GetAliveNeighborsCount(CellCollection cells, ulong x, ulong y)
         {
             byte neighbors = 0;
-            for (int i = -1; i <= 1; i++)
+
+            uint xFrom = 1;
+            if (x == 0)
+                xFrom = 0;
+
+            uint xTo = 1;
+            if (x == _size)
+                xTo = 0;
+
+            uint yFrom = 1;
+            if (y == 0)
+                yFrom = 0;
+
+            uint yTo = 1;
+            if (y == _size)
+                yTo = 0;
+
+            for (ulong i = x - xFrom; i <= x + xTo; i++)
             {
-                for (int j = -1; j <= 1; j++)
+                for (ulong j = y - yFrom; j <= y + yTo; j++)
                 {
-                    if (i == 0 && j == 0)
+                    if (i == x && j == y)
                         continue;
-                    if (cells.Contains(x + i, y + j))
+
+                    if (cells.Contains(i, j))
                         neighbors++;
                 }
             }
@@ -206,16 +225,33 @@ namespace LifeGameWP.Life
         }
 
         // Returns all neighboring cells.
-        private IEnumerable<Cell> GetNeighbors(float x, float y)
+        private IEnumerable<Cell> GetNeighbors(ulong x, ulong y)
         {
-            for (int i = -1; i <= 1; i++)
+            uint xFrom = 1;
+            if (x == 0)
+                xFrom = 0;
+
+            uint xTo = 1;
+            if (x == _size - 1)
+                xTo = 0;
+
+            uint yFrom = 1;
+            if (y == 0)
+                yFrom = 0;
+
+            uint yTo = 1;
+            if (y == _size - 1)
+                yTo = 0;
+
+            for (ulong i = y - yFrom; i <= y + yTo; i++)
             {
-                for (int j = -1; j <= 1; j++)
+                for (ulong j = x - xFrom; j <= x + xTo; j++)
                 {
-                    if ((i == 0 && j == 0) || (y + i < 0 || x + j < 0 || y + i > _size || x + j > _size))
+                    //skip current cell
+                    if (i == y && x == 0)
                         continue;
 
-                    yield return new Cell(x + j, y + i);
+                    yield return new Cell(j, i);
                 }
             }
         }
@@ -233,20 +269,21 @@ namespace LifeGameWP.Life
                     var delta = touchState.Position - prevLocation.Position;
                     if (delta.LengthSquared() > CAMERA_MOVE_TOLERANCE)
                     {
-                        _camera.X -= delta.X * 2.0f;
-                        _camera.Y -= delta.Y * 2.0f;
+                        float x = _camera.X - delta.X * 2.0f;
+                        float y = _camera.Y - delta.Y * 2.0f;
 
-                        if (_camera.X + _camera.Width > _size)
-                            _camera.X = _size - _camera.Width;
+                        if (x < 0)
+                            x = 0;
+                        else if (x > _size * CELL_SIZE - _camera.Width)
+                            x = _size * CELL_SIZE - _camera.Width;
 
-                        if (_camera.Y + _camera.Height > _size)
-                            _camera.Y = _size - _camera.Height;
+                        if (y < 0)
+                            y = 0;
+                        else if (y > _size * CELL_SIZE - _camera.Height)
+                            y = _size * CELL_SIZE - _camera.Height;
 
-                        if (_camera.X < 0)
-                            _camera.X = 0;
-
-                        if (_camera.Y < 0)
-                            _camera.Y = 0;
+                        _camera.X = x;
+                        _camera.Y = y;
 
                         _wasTouchPressed = false;
                     }
@@ -262,8 +299,8 @@ namespace LifeGameWP.Life
                     if (_wasTouchPressed)
                     {
                         var point = touchState.Position;
-                        var cellPosition = GetCellFromPoint((int)(point.X + _camera.X), (int)(point.Y + _camera.Y));
-                        var cell = new Cell(cellPosition.X, cellPosition.Y);
+                        var cellPosition = GetCellFromPoint(point.X + _camera.X, point.Y + _camera.Y);
+                        var cell = new Cell((ulong)cellPosition.X, (ulong)cellPosition.Y);
 
                         if (_cellCollection.Contains(cell))
                             _cellCollection.Remove(cell);
@@ -290,19 +327,23 @@ namespace LifeGameWP.Life
         //Draw help grid
         private void DrawGrid()
         {
-            var x = 0 - _camera.X;
-            for (int i = 0; i < _camera.Width; i++)
+            var xOffset = Math.Abs(_camera.X - Math.Floor(_camera.X / CELL_SIZE) * CELL_SIZE);
+
+            var x = 0 - (float)xOffset;
+            for (int i = 0; i < _camera.Width / CELL_SIZE + 1; i++)
             {
                 //draw vertical lines
-                _spriteBatch.DrawLine(x, 0, x, _size * CELL_SIZE, Color.Green);
+                _spriteBatch.DrawLine(x, 0, x, _camera.Height, Color.Green);
                 x += CELL_SIZE;
             }
 
-            var y = 0 - _camera.Y;
-            for (int i = 0; i < _camera.Height; i++)
+            var yOffset = Math.Abs(_camera.Y - Math.Floor(_camera.Y / CELL_SIZE) * CELL_SIZE);
+
+            var y = 0 - (float)yOffset;
+            for (int i = 0; i < _camera.Height / CELL_SIZE + 1; i++)
             {
                 //draw horizontal lines
-                _spriteBatch.DrawLine(0, y, _size * CELL_SIZE, y, Color.Green);
+                _spriteBatch.DrawLine(0, y, _camera.Width, y, Color.Green);
                 y += CELL_SIZE;
             }
         }
