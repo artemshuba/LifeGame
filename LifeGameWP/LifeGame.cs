@@ -122,7 +122,7 @@ namespace LifeGameWP
             //Draw some debug info
             _spriteBatch.DrawString(_debugFont, "Alive cells count:" + _universe.AliveCellsCount, new Vector2(10, 10), Color.Yellow);
 
-            _spriteBatch.DrawString(_debugFont, string.Format("Generation: {0}", _universe.CellCollection.Generation), new Vector2(10, 30), Color.Yellow);
+            _spriteBatch.DrawString(_debugFont, string.Format("Generation: {0}", _universe.Generation), new Vector2(10, 30), Color.Yellow);
 
             _spriteBatch.DrawString(_debugFont, string.Format("Camera: X {0} Y {1}", _universe.Camera.X, _universe.Camera.Y), new Vector2(10, 50), Color.Yellow);
 
@@ -181,7 +181,7 @@ namespace LifeGameWP
                 {
                     using (var reader = new BinaryReader(fileStream))
                     {
-                        var cellCollection = new CellCollection(UNIVERSE_FIZE);
+                        var cellCollection = new CellCollection();
 
                         //read camera coords
                         var cameraX = reader.ReadSingle();

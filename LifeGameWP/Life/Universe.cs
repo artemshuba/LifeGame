@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -52,6 +53,11 @@ namespace LifeGameWP.Life
         }
 
         /// <summary>
+        /// Generation
+        /// </summary>
+        public ulong Generation { get; set; }
+
+        /// <summary>
         /// Collection of cells
         /// </summary>
         public CellCollection CellCollection
@@ -64,7 +70,7 @@ namespace LifeGameWP.Life
         {
             _size = size;
             _spriteBatch = spriteBatch;
-            _cellCollection = new CellCollection(size);
+            _cellCollection = new CellCollection();
             _camera = new Camera()
             {
                 Width = viewPortWidth,
@@ -117,7 +123,101 @@ namespace LifeGameWP.Life
         public Task<bool> StepAsync()
         {
             //run in separate task to avoid blocking app ui thread
-            return Task.Run(() => _cellCollection.Step());
+            return Task.Run(() => Step());
+        }
+
+        #region Update universe
+
+        /// <summary>
+        /// Steps forward the specified amount of generations.
+        /// </summary>
+        /// <param name="steps">Amount of steps</param>
+        private bool Step(uint steps = 1)
+        {
+            bool changed = false;
+
+            for (uint step = 0; step < steps; step++)
+            {
+                Generation++;
+
+                // Variable to act as a snapshot of the current state while we make changes.
+                var oldState = new CellCollection(_cellCollection);
+
+                // Variable to hold the cells that we will check.
+                var checkCells = new List<Cell>(oldState);
+
+                // Adds all dead cells neighboring alive cells to the cells that we will check.
+                checkCells.AddRange(
+                    from cell in oldState
+                    from neighbor in GetNeighbors(cell.X, cell.Y)
+                    where !checkCells.Contains(neighbor)
+                    select neighbor);
+
+                foreach (var cell in checkCells)
+                {
+                    byte neighbors = GetAliveNeighborsCount(oldState, cell.X, cell.Y);
+
+                    /*
+                     * Checks if the current cell is alive or not.
+                     * 
+                     * If so, if the cell has less than 2, or more than 3 alive neighbors,
+                     * the cell will be killed.
+                     * 
+                     * If not, if the cell has 3 alive neighbors, the cell will be brought to life.
+                     */
+                    if (oldState.Contains(cell.X, cell.Y))
+                    {
+                        if (neighbors < 2 || neighbors > 3)
+                        {
+                            _cellCollection.Remove(cell);
+                            changed = true;
+                        }
+                    }
+                    else
+                    {
+                        if (neighbors == 3)
+                        {
+                            _cellCollection.Add(cell);
+                            changed = true;
+                        }
+                    }
+                }
+            }
+
+            return changed;
+        }
+
+
+        // Returns the amount of neighboring cells that are alive.
+        private byte GetAliveNeighborsCount(CellCollection cells, float x, float y)
+        {
+            byte neighbors = 0;
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (i == 0 && j == 0)
+                        continue;
+                    if (cells.Contains(x + i, y + j))
+                        neighbors++;
+                }
+            }
+            return neighbors;
+        }
+
+        // Returns all neighboring cells.
+        private IEnumerable<Cell> GetNeighbors(float x, float y)
+        {
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if ((i == 0 && j == 0) || (y + i < 0 || x + j < 0 || y + i > _size || x + j > _size))
+                        continue;
+
+                    yield return new Cell(x + j, y + i);
+                }
+            }
         }
 
         private void HandleInput()
@@ -182,6 +282,8 @@ namespace LifeGameWP.Life
 
             return new Vector2(cellX, cellY);
         }
+
+        #endregion
 
         #region Draw
 
